@@ -7,11 +7,11 @@ option go_package = "grpc_test.transfer_kzt_grpc.v1;transfer_kzt_grpc_v1";
 import "google/protobuf/timestamp.proto";
 
 service TransferKZTService {
-  rpc Transfer(TransferKZT) returns(ResponseTransfer);
-  rpc CreateTransfer(TransferKZT) returns(ResponseTransfer);
+  rpc Transfer(RequestTransfer) returns(ResponseTransfer);
+  rpc CreateTransfer(RequestTransfer) returns(ResponseTransfer);
 }
 
-message TransferKZT {
+message RequestTransfer {
   // Идентификатор сущности перевод
   uint64 id = 1;
 
