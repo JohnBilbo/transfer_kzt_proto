@@ -27,8 +27,8 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TransferKZTServiceClient interface {
-	Transfer(ctx context.Context, in *RequestTransfer, opts ...grpc.CallOption) (*TransferKZT, error)
-	CreateTransfer(ctx context.Context, in *TransferKZT, opts ...grpc.CallOption) (*ResponseCreateTransfer, error)
+	Transfer(ctx context.Context, in *RequestTransfer, opts ...grpc.CallOption) (*ResponseTransfer, error)
+	CreateTransfer(ctx context.Context, in *RequestCreateTransfer, opts ...grpc.CallOption) (*ResponseCreateTransfer, error)
 }
 
 type transferKZTServiceClient struct {
@@ -39,9 +39,9 @@ func NewTransferKZTServiceClient(cc grpc.ClientConnInterface) TransferKZTService
 	return &transferKZTServiceClient{cc}
 }
 
-func (c *transferKZTServiceClient) Transfer(ctx context.Context, in *RequestTransfer, opts ...grpc.CallOption) (*TransferKZT, error) {
+func (c *transferKZTServiceClient) Transfer(ctx context.Context, in *RequestTransfer, opts ...grpc.CallOption) (*ResponseTransfer, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(TransferKZT)
+	out := new(ResponseTransfer)
 	err := c.cc.Invoke(ctx, TransferKZTService_Transfer_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ func (c *transferKZTServiceClient) Transfer(ctx context.Context, in *RequestTran
 	return out, nil
 }
 
-func (c *transferKZTServiceClient) CreateTransfer(ctx context.Context, in *TransferKZT, opts ...grpc.CallOption) (*ResponseCreateTransfer, error) {
+func (c *transferKZTServiceClient) CreateTransfer(ctx context.Context, in *RequestCreateTransfer, opts ...grpc.CallOption) (*ResponseCreateTransfer, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ResponseCreateTransfer)
 	err := c.cc.Invoke(ctx, TransferKZTService_CreateTransfer_FullMethodName, in, out, cOpts...)
@@ -63,8 +63,8 @@ func (c *transferKZTServiceClient) CreateTransfer(ctx context.Context, in *Trans
 // All implementations must embed UnimplementedTransferKZTServiceServer
 // for forward compatibility.
 type TransferKZTServiceServer interface {
-	Transfer(context.Context, *RequestTransfer) (*TransferKZT, error)
-	CreateTransfer(context.Context, *TransferKZT) (*ResponseCreateTransfer, error)
+	Transfer(context.Context, *RequestTransfer) (*ResponseTransfer, error)
+	CreateTransfer(context.Context, *RequestCreateTransfer) (*ResponseCreateTransfer, error)
 	mustEmbedUnimplementedTransferKZTServiceServer()
 }
 
@@ -75,10 +75,10 @@ type TransferKZTServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedTransferKZTServiceServer struct{}
 
-func (UnimplementedTransferKZTServiceServer) Transfer(context.Context, *RequestTransfer) (*TransferKZT, error) {
+func (UnimplementedTransferKZTServiceServer) Transfer(context.Context, *RequestTransfer) (*ResponseTransfer, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Transfer not implemented")
 }
-func (UnimplementedTransferKZTServiceServer) CreateTransfer(context.Context, *TransferKZT) (*ResponseCreateTransfer, error) {
+func (UnimplementedTransferKZTServiceServer) CreateTransfer(context.Context, *RequestCreateTransfer) (*ResponseCreateTransfer, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTransfer not implemented")
 }
 func (UnimplementedTransferKZTServiceServer) mustEmbedUnimplementedTransferKZTServiceServer() {}
@@ -121,7 +121,7 @@ func _TransferKZTService_Transfer_Handler(srv interface{}, ctx context.Context, 
 }
 
 func _TransferKZTService_CreateTransfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TransferKZT)
+	in := new(RequestCreateTransfer)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -133,7 +133,7 @@ func _TransferKZTService_CreateTransfer_Handler(srv interface{}, ctx context.Con
 		FullMethod: TransferKZTService_CreateTransfer_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TransferKZTServiceServer).CreateTransfer(ctx, req.(*TransferKZT))
+		return srv.(TransferKZTServiceServer).CreateTransfer(ctx, req.(*RequestCreateTransfer))
 	}
 	return interceptor(ctx, in, info, handler)
 }

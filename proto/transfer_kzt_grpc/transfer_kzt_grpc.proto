@@ -7,13 +7,23 @@ option go_package = "grpc_test.transfer_kzt_grpc.v1;transfer_kzt_grpc_v1";
 import "transfer_kzt_grpc/transfer_kzt_general_info.proto";
 
 service TransferKZTService {
-  rpc Transfer(RequestTransfer) returns(TransferKZT);
-  rpc CreateTransfer(TransferKZT) returns(ResponseCreateTransfer);
+  rpc Transfer(RequestTransfer) returns(ResponseTransfer);
+  rpc CreateTransfer(RequestCreateTransfer) returns(ResponseCreateTransfer);
 }
 
 // запрос для получения информации о платеже тенге
 message RequestTransfer {
   uint64 id = 1;
+}
+
+// запрос для получения информации о платеже тенге
+message ResponseTransfer {
+  TransferKZT transfer = 1;
+}
+
+// ответ после создания платежа тенге в бд
+message RequestCreateTransfer {
+  TransferKZT transfer = 1;
 }
 
 // ответ после создания платежа тенге в бд
