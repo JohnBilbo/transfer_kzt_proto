@@ -1,0 +1,252 @@
+syntax = "proto3";
+
+package transfer_kzt_grpc;
+
+option go_package = "grpc_test.transfer_kzt_grpc.v1;transfer_kzt_grpc_v1";
+
+import "google/protobuf/timestamp.proto";
+
+// Основная информация по запросу transfer kzt, платежа тенге
+message TransferKZT {
+  // Идентификатор сущности перевод
+  uint64 id = 1;
+
+  // Канал создания платежа
+  string channel =2;
+
+  // Уникальный идентификатор партнера, с приложения которого был совершен платеж
+  string partner_id = 3;
+
+  // Дата валютирования [pattern: dd-MM-yyyy, example: 01-01-2023], REQUIRED
+  google.protobuf.Timestamp value_date = 4;
+
+  // Дата документа [pattern: dd-MM-yyyy, example: 01-01-2023]
+  google.protobuf.Timestamp doc_date = 5;
+
+  // Время отправки [pattern: dd-MM-yyyy HH:mm:ss, example: 01-01-2023 13:13:13]
+  google.protobuf.Timestamp time_sent = 6;
+
+  // Счёт списания комиссии
+  string commission_account = 7;
+
+  // Номер документа
+  string n_doc = 8;
+
+  // Сумма TODO стоит ли оставлять данное поле в типе плавающей точки? Для денег лучше строку использовать
+  double amount = 9;
+
+  // Валюта
+  string currency = 10;
+
+  // КНП (Код назначения платежа) [Макс кол-во символов 3, мин кол-во символов 3]
+  string knp = 11;
+
+  // КБК
+  string tax_code = 12;
+
+  // Отправитель(и)
+  Sender sender = 13;
+
+  // Получатель(и)
+  Receiver receiver = 14;
+
+  // Электронная подпись XML первого подписанта [example: XML с подписью NCA]
+  string signature_a = 15;
+
+  // Электронная подпись XML второго подписанта [example: XML с подписью NCA]
+  string signature_b = 16;
+
+  // Произвольное назначение платежа, заполняется клиентом [example: Оплата пенсионных взносов за сотрудников]
+  string narrative_first = 17;
+
+  // Назначение платежа [example: Единый платеж]
+  string narrative = 18;
+
+  // Тип платежа [example: INTERNAL, EXTERNAL, BUDGET, MEDICAL, PENSION, MEDICAL_REMAND, SOCIAL, SALARY, STANDARD_CARD,
+  // VOLUNTARY_PENSION, STANDARD_CARD_BANK, SINGLE, MANDATORY_EMPLOYER_PENSION, ANNUITY_PENSION, INSURANCE,
+  // PRE_PENSION_ANNUITY_INSURANCE_PAYMENTS, EMPLOYER_PROFESSIONAL_PAYMENTS, KAZ_RAILWAYS_UNIFIED_PERSONAL_ACCOUNT,
+  // DIGITAL_TENGE_INTERNAL, DIGITAL_TENGE_BUDGET ]
+  string type = 19;
+
+  // Подтип платежа
+  string sub_type = 20;
+
+  // Код клиента [example: 694638]
+  string client_code = 21;
+
+  // Период [pattern: dd-MM-yyyy, example: 01-01-2023]
+  google.protobuf.Timestamp  period = 22;
+
+  // Подразделение [example: AF1]
+  string division = 23;
+
+  // Идентификатор владельца [example: 31234]
+  uint64 customer_id = 24;
+
+  // Состояние(Статус) платежа [ CREATED, CONFIRMED, APPROVED, APPROVED_HALF, SENDED, BANK_ACCEPTED, APPROVED_BANK,
+  // EXECUTED, ERROR, ANTIFRAUD_ERROR, DELETED, PARTIALLY_SIGNED, SIGNED, PRESENDED, DRAFT ]
+  string state = 25;
+
+  // Признак срочного платежа [example: false]
+  bool is_urgent = 26;
+
+  // НДС [example: 0]
+  int32 nds = 27;
+
+  // Текст ошибки [example: Ошибка текст]
+  string error_text = 28;
+
+  // Определяет, расходуются ли бонусы при платеже [example: true, nullable: true]
+  bool spend_bonuses = 29;
+
+  // Список сотрудников
+  repeated Employee employee_list = 30;
+}
+
+// Отправитель
+message Sender {
+  // ИИН отправителя [minLength: 1, example: 940302300403], REQUIRED
+  string idn = 1;
+  // Имя отправителя
+  string name = 2;
+  // БИК отправителя [example: GCVPKZ2A]
+  string bank_identifier_code = 3;
+  // Счёт отправителя [example: KZ128560000000517854]
+  string accountNumber = 4;
+  // Код отправителя [example: 17]
+  string code = 5;
+  // ISO код страны плательщика фактического бенефициара
+  string country = 6;
+  // Банк
+  Bank bank = 7;
+  // Признак платежа за 3 лицо фактического бенефициара
+  bool is_third_party_payment = 8;
+  // Посредник
+  Intermediary intermediary = 9;
+}
+
+// Получатель(и)
+message Receiver {
+  // ИИН бенефициара [minLength: 1, example: 940302300403], REQUIRED
+  string idn = 1;
+  // Имя бенефициара
+  string name = 2;
+  // БИК бенефициара [example: GCVPKZ2A]
+  string bank_identifier_code = 3;
+  // Счёт бенефициара [example: KZ128560000000517854]
+  string accountNumber = 4;
+  // Код бенефициара [example: 17]
+  string code = 5;
+  // ISO код страны фактического бенефициара
+  string country = 6;
+  // Банк
+  Bank bank = 7;
+  // Признак платежа 3-му лицу бенефициара.
+  bool is_third_party_payment = 8;
+  // Получатель бенефициар (посредник)
+  Intermediary intermediary = 9;
+}
+
+// Информация о банке
+message Bank {
+  // Идентификатор [example: 435348763]
+  uint64 id = 1;
+  // sub [example: "public"] TODO без понятия что это
+  string sub = 2;
+  // archival [example: "1"] TODO без понятия что это
+  string archival = 3;
+  // Наименование банка [example: "АО «Tengri Bank»"]
+  string bank_name = 4;
+  // Код банка, уникальный идентификатор присваиваемый центральным банком страны [example: "TNGRKZKX"]
+  string code_bank = 5;
+  // Идентификатор банковского счета [example: "620"]
+  string iban_code = 6;
+  // Черный список для банков под санкциями [example: "false"]
+  string black_list = 7;
+}
+
+// Посредник
+message Intermediary {
+  // Номер налогоплательщика фактического бенефициара (РНН 3-го лица)
+  string tax_identification_number = 1;
+  // Наименование фактического бенефициара в платеже
+  string name = 2;
+  // Признак юридического лица отправителя
+  bool is_legal_entity = 3;
+}
+
+// Информация о сотруднике
+message Employee {
+  // Идентификатор сущности сотрудник [example: 142334]
+  uint64 id = 1;
+  // Операция [example: Операция]
+  string operation = 2;
+  // Дата рождения [pattern: dd-MM-yyyy, example: 01-01-2023]
+  google.protobuf.Timestamp birth_date = 3;
+  // Фамилия
+  string surname = 4;
+  // Имя
+  string name = 5;
+  // Отчество
+  string patronymic = 6;
+  // Счёт [example: KZ80009EP00368609101]
+  string account = 7;
+  // Сумма фактическая за сотрудника
+  int32 amount = 8;
+  // Ожидаемая сумма оплаты за сотрудника
+  int32 estimated_amount = 9;
+  // Список КНП за которые производится оплата
+  repeated string knp_list = 10;
+  // ИИН
+  string idn = 11;
+  // Период (необходима нормализация, то есть в будущей версии переделать на MM-yyyy формат)
+  // [pattern: dd-MM-yyyy, example: 01-01-2023]
+  google.protobuf.Timestamp period = 12;
+  // Признак резиденства [example: true/false]
+  bool is_resident = 13;
+  // Код сектора экономики [example: 07]
+  string economic_sector_code = 14;
+  // Страна [example: KZ]
+  string country = 15;
+  // Описание [example: Описание платежа]
+  string assign = 16;
+  // Детали платежа
+  repeated Detail detail_list = 17;
+  // История платежа
+  repeated StateHistory state_history = 18;
+}
+
+// Детали платежа
+message Detail {
+  // Идентификатор
+  uint64 id = 1;
+  // Тип деталей [example: SUB_KNP, PROCESS_ID, FINE_PAY, RAILWAYS_UNIFIED_ACCOUNT_NUMBER, RAILWAYS_THIRD_PARTY_IDN, RAILWAYS_DOCUMENT_ID ]
+  string type = 2;
+  // Значение - результат
+  string value = 3;
+}
+
+// История платежа
+message StateHistory {
+  // Идентификатор сущности история платежа
+  uint64 id = 1;
+  // Идентификатор сущности перевод
+  int64 id_transfer = 2;
+  // Состояние(Статус) платежа [ CREATED, CONFIRMED, APPROVED, APPROVED_HALF, SENDED, BANK_ACCEPTED, APPROVED_BANK,
+  // EXECUTED, ERROR, ANTIFRAUD_ERROR, DELETED, PARTIALLY_SIGNED, SIGNED, PRESENDED, DRAFT ]
+  string state = 3;
+  // Кажется не применяется
+  string action = 4;
+  // Логин клиента
+  string username = 5;
+  // ФИО клиента [example: Жолтай Д.С.]
+  string full_name = 6;
+  // Дата + время события [dd-MM-yyyy HH:mm:ss, example: 01-01-2023 14:14:14]
+  google.protobuf.Timestamp datetime = 7;
+  // Канал [example: business-mobile]
+  string channel = 8;
+  // Хост кажется не применяется
+  string host = 9;
+  // Коммент что произошло во время смены статуса
+  string comment = 10;
+}
